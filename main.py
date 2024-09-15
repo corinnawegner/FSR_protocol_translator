@@ -31,7 +31,12 @@ def reassemble_text(chunks):
     return protocol_translated
 
 
-def create_refined_pdf(file_path, text): #todo: make the table of contents nicer
+def format_agenda(text):
+    # Regular expression to match and fix agenda numbering issues
+    text = re.sub(r'(\d)\s+\.\s+', r'\1. ', text)  # Fix spaces between numbers and topics
+    return text
+
+def create_refined_pdf(file_path, text):
     # Create a document
     doc = SimpleDocTemplate(file_path, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
     story = []
@@ -47,17 +52,26 @@ def create_refined_pdf(file_path, text): #todo: make the table of contents nicer
     body_style = ParagraphStyle(name='BodyText', fontSize=10, spaceAfter=6, fontName="Helvetica", leading=12)
     list_item_style = ParagraphStyle(name='ListItem', fontSize=10, leftIndent=18, spaceAfter=6)
 
-    # Start processing the content
+    # Format the agenda section specifically
+    text = format_agenda(text)
+
+    # Split text into lines
     lines = text.split('\n')
 
-    # Assume the first line is the title
-    story.append(Paragraph("Minutes of the Student Council Meeting on 16.05.2024", title_style))
-    story.append(Spacer(1, 12))
+    # Add title
+    story.insert(0, Paragraph("Minutes of the Student Council Meeting on 16.05.2024", title_style))  # Todo: Make this variable
+    story.insert(1, Spacer(1, 12))
 
+    # Main content processing (after TOC/Agenda)
     for line in lines:
         line = line.strip()
 
-        if line.startswith("TOP"):  # Topical Headings
+        # Check for specific sections "Legend", "Agenda", "Present"
+        if line.lower() in ["legend", "agenda", "present"]:
+            story.append(Paragraph(line, heading_style))
+            story.append(Spacer(1, 6))
+
+        elif line.startswith("TOP"):  # Topical Headings
             story.append(Paragraph(line, heading_style))
             story.append(Spacer(1, 6))
 
@@ -77,7 +91,6 @@ def create_refined_pdf(file_path, text): #todo: make the table of contents nicer
     # Building the PDF
     doc.build(story)
 
-
 def main_function(protocol_german):
     chunks_german = split_text_by_signal_word(protocol_german, "TOP")
     chunks_translated = []
@@ -92,5 +105,4 @@ def main_function(protocol_german):
 
 result = main_function(text_test)
 print(result)
-create_refined_pdf('translated_protocol_test.pdf', result)
-
+create_refined_pdf('translated_protocol_test_refined.pdf', result)
