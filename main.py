@@ -8,13 +8,10 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
 import protocol_reader as pr
 
-text_test = pr.extract_text_from_pdf()
-
 with open('deepl_api_key.txt', 'r') as file:
     DEEPL_AUTH_KEY = file.read().strip()
 
 translator = deepl.Translator(DEEPL_AUTH_KEY)
-
 
 def split_text_by_signal_word(text, signal_word="TOP"):
     chunks = re.split(f'(?=^{signal_word})', text, flags=re.MULTILINE)
@@ -36,7 +33,7 @@ def format_agenda(text):
     text = re.sub(r'(\d)\s+\.\s+', r'\1. ', text)  # Fix spaces between numbers and topics
     return text
 
-def create_refined_pdf(file_path, text):
+def create_refined_pdf(file_path, text, date):
     # Create a document
     doc = SimpleDocTemplate(file_path, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
     story = []
@@ -59,7 +56,7 @@ def create_refined_pdf(file_path, text):
     lines = text.split('\n')
 
     # Add title
-    story.insert(0, Paragraph("Minutes of the Student Council Meeting on 16.05.2024", title_style))  # Todo: Make this variable
+    story.insert(0, Paragraph(f"Minutes of the Student Council Meeting on {date}", title_style))  # Todo: Make this variable
     story.insert(1, Spacer(1, 12))
 
     # Main content processing (after TOC/Agenda)
@@ -91,18 +88,19 @@ def create_refined_pdf(file_path, text):
     # Building the PDF
     doc.build(story)
 
-def main_function(protocol_german):
+def main(date = '16.05.2024'):
+    protocol_german = pr.extract_text_from_pdf(date)
     chunks_german = split_text_by_signal_word(protocol_german, "TOP")
     chunks_translated = []
+    print("Translating protocol")
     for i in range(len(chunks_german)):
         chunk_translated = translate_chunk(chunks_german[i])
-        print(chunk_translated)
         chunks_translated.append(chunk_translated)
-    print(chunks_translated)
     protocol_translated = reassemble_text(chunks_translated)
-    return protocol_translated
+    print("Creating PDF")
+    path_saving = f"protocols/translated_protocol_test_{date.replace('.', '')}.pdf"
+    create_refined_pdf(path_saving, protocol_translated, date)
+    print(f"Saved translated protocol at {path_saving}.")
 
-
-result = main_function(text_test)
-print(result)
-create_refined_pdf('translated_protocol_test_refined.pdf', result)
+if __name__ == "__main__":
+    main() #Todo: Add date

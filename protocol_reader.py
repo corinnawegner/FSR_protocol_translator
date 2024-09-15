@@ -5,13 +5,13 @@ import requests
 import PyPDF2
 
 
-def extract_text_from_pdf():
+def extract_text_from_pdf(date):
     # Set up the Selenium WebDriver (Firefox)
     driver = webdriver.Firefox()
     driver.get('https://fsr.physik.uni-goettingen.de/der-fachschaftsrat/sitzungsprotokolle/')
 
     # Click the link to download the PDF
-    html_protocol = driver.find_element(By.LINK_TEXT, '16.05.2024')
+    html_protocol = driver.find_element(By.LINK_TEXT, date)
     time.sleep(5)  # Wait for 5 seconds
     html_protocol.click()
 
@@ -26,7 +26,15 @@ def extract_text_from_pdf():
 
     # Download the PDF from the URL
     response = requests.get(pdf_url)
-    pdf_path = "Protokoll_20240516.pdf"
+
+
+    # Split the date string by periods
+    day, month, year = date.split('.')
+
+    # Reformat to 'YYYYMMDD'
+    formatted_date = year + month + day
+
+    pdf_path = f"protocols/Protokoll_{formatted_date}"
 
     # Save the downloaded PDF to a file
     with open(pdf_path, 'wb') as f:
@@ -47,5 +55,5 @@ def extract_text_from_pdf():
 
 
 # Call the function and print the output
-extracted_text = extract_text_from_pdf()
-print(extracted_text)
+#extracted_text = extract_text_from_pdf()
+#print(extracted_text)
