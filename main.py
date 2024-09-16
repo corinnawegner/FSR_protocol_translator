@@ -18,16 +18,13 @@ def split_text_by_signal_word(text, signal_word="TOP"):
     chunks = re.split(f'(?=^{signal_word})', text, flags=re.MULTILINE)
     return chunks
 
-
 def translate_chunk(text):
     result = translator.translate_text(text, target_lang="EN-US")
     return result.text
 
-
 def reassemble_text(chunks):
     protocol_translated = ''.join(chunks)
     return protocol_translated
-
 
 def format_agenda(text):
     # Regular expression to match and fix agenda numbering issues
@@ -57,7 +54,7 @@ def create_refined_pdf(file_path, text, date):
     lines = text.split('\n')
 
     # Add title
-    story.insert(0, Paragraph(f"Minutes of the Student Council Meeting on {date}", title_style))  # Todo: Make this variable
+    story.insert(0, Paragraph(f"Minutes of the Student Council Meeting on {date}", title_style))
     story.insert(1, Spacer(1, 12))
 
     # Main content processing (after TOC/Agenda)
@@ -89,7 +86,7 @@ def create_refined_pdf(file_path, text, date):
     # Building the PDF
     doc.build(story)
 
-def main(date):
+def main(date, save_path= None):
     protocol_german = pr.extract_text_from_pdf(date)
     chunks_german = split_text_by_signal_word(protocol_german, "TOP")
     chunks_translated = []
@@ -99,12 +96,16 @@ def main(date):
         chunks_translated.append(chunk_translated)
     protocol_translated = reassemble_text(chunks_translated)
     print("Creating PDF")
-    path_saving = f"protocols/translated_protocol_test_{date.replace('.', '')}.pdf"
+    if save_path is None:
+        path_saving = f"protocols/translated_protocol_test_{date.replace('.', '')}.pdf"
+    else:
+        path_saving = save_path + f"translated_protocol_test_{date.replace('.', '')}.pdf"
     create_refined_pdf(path_saving, protocol_translated, date)
     print(f"Saved translated protocol at {path_saving}.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a date.")
     parser.add_argument('date', type=str, help="The date in 'DD.MM.YYYY' format.") # For testing use '16.05.2024'
+    parser.add_argument('save_path', nargs='?', type=str, help="The path the translated document should be saved to.", default=None)
     args = parser.parse_args()
-    main(args.date)
+    main(args.date, args.save_path)

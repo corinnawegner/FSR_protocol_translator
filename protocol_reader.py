@@ -27,7 +27,6 @@ def extract_text_from_pdf(date):
     # Download the PDF from the URL
     response = requests.get(pdf_url)
 
-
     # Split the date string by periods
     day, month, year = date.split('.')
 
