@@ -27,8 +27,8 @@ This repository contains a Python script for automating the process of downloadi
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/protocol-translator.git
-   cd protocol-translator
+   git clone https://github.com/corinnawegner/FSR_protocol_translator.git
+   cd FSR_protocol_translator
    ```
 
 2. **Install required Python packages:**
@@ -77,17 +77,5 @@ Replace `16.05.2024` with the date of the protocol you want to process.
 
 Feel free to submit issues and pull requests. Contributions are welcome!
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- DeepL for providing the translation API.
-- Selenium for browser automation.
-- PyPDF2 for PDF text extraction.
-- ReportLab for PDF generation.
-
 ---
 
-Feel free to adjust any details or add any additional sections specific to your project!
