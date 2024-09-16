@@ -1,3 +1,4 @@
+import argparse
 import deepl
 import re
 from reportlab.lib.pagesizes import letter
@@ -88,7 +89,7 @@ def create_refined_pdf(file_path, text, date):
     # Building the PDF
     doc.build(story)
 
-def main(date = '16.05.2024'):
+def main(date):
     protocol_german = pr.extract_text_from_pdf(date)
     chunks_german = split_text_by_signal_word(protocol_german, "TOP")
     chunks_translated = []
@@ -103,4 +104,7 @@ def main(date = '16.05.2024'):
     print(f"Saved translated protocol at {path_saving}.")
 
 if __name__ == "__main__":
-    main() #Todo: Add date
+    parser = argparse.ArgumentParser(description="Process a date.")
+    parser.add_argument('date', type=str, help="The date in 'DD.MM.YYYY' format.") # For testing use '16.05.2024'
+    args = parser.parse_args()
+    main(args.date)
