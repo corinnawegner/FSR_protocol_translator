@@ -1,5 +1,3 @@
-Certainly! Here’s a README file for your GitHub repository:
-
 ---
 
 # Protocol Translator and Formatter
